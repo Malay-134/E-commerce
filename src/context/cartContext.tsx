@@ -1,4 +1,6 @@
 "use client";
+import { getObjectIdFromNumber } from "@/utils/objectId";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import {
   createContext,
@@ -18,7 +20,7 @@ type ReviewType = {
 };
 
 type ProductType = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   thumbnail: string;
@@ -32,7 +34,7 @@ type CartContextType = {
   cart: ProductType[];
   handleCart: (item: ProductType) => void;
   deleteCartItem: (item: ProductType) => void;
-  updateItemQuantity: (itemId: number, quantity: number) => void;
+  updateItemQuantity: (itemId: string, quantity: number) => void;
 };
 
 const cartContext = createContext<CartContextType | undefined>(undefined);
@@ -42,50 +44,97 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (user) {
-      const savedCart = localStorage.getItem(`cart_${user.id}`);
-      if (savedCart) {
-        setCart(JSON.parse(savedCart));
+    const fetchCart = async () => {
+      try {
+        const res = await axios.get("/api/cart");
+        setCart(res.data.cart);
+        console.log(res.data.cart);
+      } catch (err) {
+        console.error("Failed to fetch cart", err);
       }
-    }
+    };
+    fetchCart();
   }, []);
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (user) {
-      localStorage.setItem(`cart_${user.id}`, JSON.stringify(cart));
-    }
-  }, [cart]);
+  const handleCart = async (item: ProductType) => {
+    try {
+      const isAuth = localStorage.getItem("isLogged");
+      if (!isAuth) {
+        toast.error("Please login to add items.");
+        router.push("/login");
+        return;
+      }
 
-  const handleCart = (item: ProductType) => {
-    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
-    if (existingItem) {
-      updateItemQuantity(item.id, existingItem.quantity + 1);
-      toast("Item quantity updated!");
-      return;
-    }
-    const isAuth = localStorage.getItem("isLogged");
-    if (!isAuth) {
+      const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+      const quantity = existingItem ? existingItem.quantity + 1 : 1;
+
+      await axios.post("/api/cart", {
+        productId: getObjectIdFromNumber(Number(item.id)),
+        quantity,
+      });
+      console.log(item.id);
+      if (existingItem) {
+        updateItemQuantity(item.id, quantity);
+      } else {
+        const newItem = { ...item, quantity };
+        setCart((prev) => [...prev, newItem]);
+      }
+
       toast.success("Item added to cart!");
-      router.push("/login");
-    } else {
-      console.log(item);
-      console.log(cart);
-      const newItem = { ...item, quantity: 1 };
-      setCart((prev) => [...prev, newItem]);
-      toast.success("Item added to cart!");
+    } catch (err) {
+      toast.error("Failed to add item to cart");
+      console.error(err);
     }
   };
-  const deleteCartItem = (item: ProductType) => {
-    setCart((prev) => prev.filter((cartItem) => cartItem.id !== item.id));
+  // const handleCart = (item: ProductType) => {
+  //   const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+  //   if (existingItem) {
+  //     updateItemQuantity(item.id, existingItem.quantity + 1);
+  //     toast("Item quantity updated!");
+  //     return;
+  //   }
+  //   const isAuth = localStorage.getItem("isLogged");
+  //   if (!isAuth) {
+  //     toast.success("Item added to cart!");
+  //     router.push("/login");
+  //   } else {
+  //     console.log(item);
+  //     console.log(cart);
+  //     const newItem = { ...item, quantity: 1 };
+  //     setCart((prev) => [...prev, newItem]);
+  //     toast.success("Item added to cart!");
+  //   }
+  // };
+
+  const deleteCartItem = async (itemId: ProductType) => {
+    try {
+      await axios.delete(`/api/cart?productId=${itemId.id}`);
+      console.log("itemId.id", itemId.id);
+      // console.log("itemId", itemId);
+      // console.log(getObjectIdFromNumber(Number(itemId.id)));
+      setCart((prev) => prev.filter((item) => item.id !== itemId.id));
+      toast.success("Item removed!");
+    } catch (err) {
+      toast.error("Failed to remove item");
+      console.error(err);
+    }
   };
 
-  const updateItemQuantity = (itemId: number, quantity: number) => {
+  // const deleteCartItem = (item: ProductType) => {
+  //   setCart((prev) => prev.filter((cartItem) => cartItem.id !== item.id));
+  // };
+
+  const updateItemQuantity = (itemId: string, quantity: number) => {
     setCart((prev) =>
       prev.map((item) => (item.id === itemId ? { ...item, quantity } : item))
     );
   };
+
+  // const updateItemQuantity = (itemId: string, quantity: number) => {
+  //   setCart((prev) =>
+  //     prev.map((item) => (item.id === itemId ? { ...item, quantity } : item))
+  //   );
+  // };
 
   return (
     <cartContext.Provider

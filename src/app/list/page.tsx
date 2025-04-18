@@ -3,14 +3,23 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useCart } from "@/context/cartContext";
 
+type ReviewType = {
+  rating: number;
+  comment: string;
+  date: string;
+  reviewerName: string;
+  reviewerEmail: string;
+};
+
 type ProductType = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   thumbnail: string;
   price: number;
   rating: number;
-  reviews: number;
+  reviews: ReviewType[];
+  quantity: number;
 };
 
 export default function ProductPage() {
@@ -76,11 +85,10 @@ export default function ProductPage() {
               </button>
             </div>
           ))}
-        </div>  
+        </div>
       ) : (
         <p className="pl-3 pt-4">No products found for "{searchQuery}"</p>
       )}
     </div>
   );
 }
-  

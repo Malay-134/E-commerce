@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "@/context/cartContext";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 export default function NavIcons() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -30,16 +31,16 @@ export default function NavIcons() {
     console.log(isProfileOpen);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await axios.post("/api/logout");
     const user = JSON.parse(localStorage.getItem("user") || "null");
     if (user) {
       localStorage.removeItem(`cart_${user.id}`);
     }
     localStorage.removeItem("isLogged");
     localStorage.removeItem("user");
-    // localStorage.removeItem("loggedInUser");
     toast.success("Logged out successfully!");
-    router.push("/login");
+    window.location.href = "/login";
   };
 
   return (

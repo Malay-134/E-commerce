@@ -1,12 +1,8 @@
 "use client";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-// interface UserDetails {
-//   firstname: string;
-//   lastname: string;
-//   email: string;
-// }
+import toast from "react-hot-toast";
 
 export default function Profile() {
   const [user, setUser] = useState<{
@@ -22,6 +18,18 @@ export default function Profile() {
   }, []);
 
   const router = useRouter();
+
+  const handleLogout = async () => {
+    await axios.post("/api/logout");
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (user) {
+      localStorage.removeItem(`cart_${user.id}`);
+    }
+    localStorage.removeItem("isLogged");
+    localStorage.removeItem("user");
+    toast.success("Logged out successfully!");
+    window.location.href = "/login";
+  };
 
   if (!user) return <div className="text-white">Loading user info...</div>;
   // const [profileDet, setProfileDet] = useState<UserDetails | null>(null);
@@ -48,10 +56,7 @@ export default function Profile() {
       </p>
       <button
         className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
-        onClick={() => {
-          localStorage.removeItem("user");
-          router.push("/login");
-        }}
+        onClick={handleLogout}
       >
         Logout
       </button>

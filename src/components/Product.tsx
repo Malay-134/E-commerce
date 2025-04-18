@@ -13,7 +13,7 @@ type ReviewType = {
 };
 
 type ProductType = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   thumbnail: string;
@@ -72,7 +72,7 @@ export default function Product() {
         </div>
       ) : (
         <div className="p-8 pb-20">
-          <div className="flex flex-col gap-2 justify-end mb-4">
+          <div className="flex justify-end mb-4">
             <select
               value={sortType}
               onChange={sortChange}
@@ -102,7 +102,7 @@ export default function Product() {
                 <p className="font-bold">M.R.P: ${item.price}</p>
                 <p>{item.rating}⭐</p>
                 <button
-                  onClick={() => handleCart({ ...item, quantity: 1 })}
+                  onClick={() => handleCart(item)}
                   className="border border-(--main) text-(--main) font-bold rounded-md py-2 hover:bg-(--main) hover:text-white"
                 >
                   {" "}

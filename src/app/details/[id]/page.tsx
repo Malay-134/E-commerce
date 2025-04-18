@@ -13,7 +13,7 @@ type ReviewType = {
 };
 
 type ProductType = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   thumbnail: string;

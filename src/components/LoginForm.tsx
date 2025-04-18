@@ -7,7 +7,7 @@ import { Spinner } from "./spinner";
 
 export const LOCAL_STORAGE_KEYS = {
   USER: "user",
-  TOKEN: "token",
+  // TOKEN: "token",
   IS_LOGGED: "isLogged",
 };
 
@@ -23,18 +23,18 @@ export default function LoginForm() {
     try {
       const response = await axios.post("api/login", { email, password });
       console.log(response);
-      console.log(response.data.user.id);
+      // console.log(response.data.user.id);
       if (response.data.message === "success") {
         localStorage.setItem(
           LOCAL_STORAGE_KEYS.USER,
           JSON.stringify(response.data.user)
         );
         // localStorage.setItem("user", JSON.stringify(response.data.user));
-        localStorage.setItem("token", response.data.user.id);
+        // localStorage.setItem("token", response.data.user.id);
         localStorage.setItem("isLogged", "true");
         console.log(response.data);
-        toast.success("Login successful!");
         router.push("/");
+        // toast.success("Login successful!");
       } else {
         toast.error("Login failed. Please check your credentials.");
       }

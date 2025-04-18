@@ -9,6 +9,7 @@ export default function CartPage() {
     (total, item) => total + item.price * item.quantity,
     0
   );
+
   return (
     <div className="p-8 pb-20">
       <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
@@ -81,6 +82,6 @@ export default function CartPage() {
           </div>
         </>
       )}
-    </div>  
+    </div>
   );
 }
