@@ -3,6 +3,8 @@ import { useCart } from "@/context/cartContext";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Spinner } from "./spinner";
+import axios from "axios";
+import Image from "next/image";
 
 type ReviewType = {
   rating: number;
@@ -13,6 +15,7 @@ type ReviewType = {
 };
 
 type ProductType = {
+  _id: string;
   id: string;
   title: string;
   description: string;
@@ -40,26 +43,20 @@ export default function Product() {
     setProduct(sorted);
   };
 
+  const fetchProduct = async () => {
+    try {
+      const res = await axios.get("/api/product");
+      console.log("Status:", res.status, res.statusText);
+      console.log("Fetched Data:", res.data);
+      setProduct(res.data);
+    } catch (error) {
+      console.log("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    fetch("https://dummyjson.com/products")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch recipes. Please try again later.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setProduct(data.products);
-        setError("");
-      })
-      .catch((err) => {
-        setError(err.message);
-        console.error("Error fetching data:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    fetchProduct();
   }, []);
 
   return (

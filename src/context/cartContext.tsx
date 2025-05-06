@@ -20,6 +20,7 @@ type ReviewType = {
 };
 
 type ProductType = {
+  _id: string;
   id: string;
   title: string;
   description: string;
@@ -43,16 +44,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<ProductType[]>([]);
   const router = useRouter();
 
+  const fetchCart = async () => {
+    //   const res = await fetch('/api/cart', {});
+    //   const cartData = await res.json();
+    //   setCart(cartData.cart);
+    // };
+    try {
+      const res = await axios.get("/api/cart");
+      console.log("RES", res);
+      const cartData = res.data.cart;
+      setCart(cartData);
+      console.log("Cartdata", cartData);
+      // console.log("response", res.data.cart);
+    } catch (err) {
+      console.error("Failed to fetch cart", err);
+    }
+  };
   useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const res = await axios.get("/api/cart");
-        setCart(res.data.cart);
-        console.log(res.data.cart);
-      } catch (err) {
-        console.error("Failed to fetch cart", err);
-      }
-    };
     fetchCart();
   }, []);
 
@@ -69,7 +77,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       const quantity = existingItem ? existingItem.quantity + 1 : 1;
 
       await axios.post("/api/cart", {
-        productId: getObjectIdFromNumber(Number(item.id)),
+        productId: item._id,
         quantity,
       });
       console.log(item.id);

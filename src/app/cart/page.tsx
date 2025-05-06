@@ -25,17 +25,25 @@ export default function CartPage() {
           <div className="grid gap-4">
             {cart.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="flex items-center border p-4 rounded-lg gap-4"
               >
                 <img
-                  src={item.thumbnail}
                   alt={item.title}
+                  // alt={item.title || item.product.title}
+                  src={item.thumbnail}
+                  // src={item.thumbnail || item.product.thumbnail}
                   className="w-24 h-24 rounded object-cover"
                 />
                 <div className="flex-1">
-                  <h3 className="font-bold">{item.title}</h3>
-                  <p className="text-gray-500">${item.price}</p>
+                  <h3 className="font-bold">
+                    {item.title}
+                    {/* {item.title || item.product.title} */}
+                  </h3>
+                  <p className="text-gray-500">
+                    ${item.price}
+                    {/* ${item.price || item.product.price} */}
+                  </p>
                   <div className="flex items-center gap-2 mt-2">
                     <button
                       onClick={() =>
@@ -67,6 +75,9 @@ export default function CartPage() {
                 </div>
                 <div className="font-bold">
                   ${(item.price * item.quantity).toFixed(2)}
+                  {/* {((item.price || item.product.price) * item.quantity).toFixed(
+                    2
+                  )} */}
                 </div>
               </div>
             ))}
