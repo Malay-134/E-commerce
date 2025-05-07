@@ -41,6 +41,7 @@ export async function GET(request) {
         title: product.title,
         thumbnail: product.thumbnail,
         price: product.price,
+        rating: product.rating,
         image: product.image,
         quantity: item.quantity,
       };

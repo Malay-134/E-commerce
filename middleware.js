@@ -1,13 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+// import type { NextRequest } from "next/server";
 
 const protectedRoutes = ["/profile", "/cart"];
 
-export function middleware(request: NextRequest) {
+export function middleware(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
 
-  console.log("Middleware running for:", pathname);
+  console.log(">>> Middleware running for:", pathname);
   console.log("Token exists:", token);
+
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     if (!token) {
       console.log("No token, redirecting to /login");
@@ -24,6 +26,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile", "/cart"],
+  matcher: ["/profile", "/cart", "/login"],
 };
-

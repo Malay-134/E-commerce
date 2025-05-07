@@ -5,7 +5,7 @@ import NavIcons from "./NavIcons";
 
 export default function Navbar() {
   return (
-    <div className="h-16 px-4 md:px-8 lg:px-16 xl:px-32 relative bg-(--background) shadow-sm">
+    <div className="h-16 px-4 md:px-8 lg:px-16 xl:px-32 relative bg-(--background) shadow-sm ">
       <div className="h-full flex justify-between items-center md:hidden">
         <Link href="/" className="text-2xl font-semibold">
           ZED

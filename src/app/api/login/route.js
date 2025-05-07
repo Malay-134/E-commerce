@@ -26,6 +26,7 @@ export async function POST(request) {
     );
     const response = NextResponse.json({
       message: "success",
+      success:"true",                     /////////////////////////
       user: {
         id: userExisted._id,
         name: userExisted.name,
@@ -36,7 +37,7 @@ export async function POST(request) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60 * 24, // 1 day
+      maxAge: 60 * 60 * 24, 
       path: "/",
     });
     return response;
